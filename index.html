@@ -125,13 +125,16 @@
     });
 
 
-    $("#copy").on("click", function(){
-        alert("on working!!");
-//        var client = new ZeroClipboard();
-//        var code = editor.getSession().getValue();
-//        ZeroClipboard.setValue("text/plain", code);
+    var client = new ZeroClipboard(document.getElementById("copy"));
+    client.on("ready", function (readyEvent) {
+        client.on('copy', function (event) {
+            event.clipboardData.setData('text/plain', editor.getValue());
+        });
+        client.on("aftercopy", function (event) {
+            console.log(editor.getValue());
+            alert("Text copied to clipboard");
+        });
     });
-
 
 </script>
 </body>
