@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>gitignore</title>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
+
+    <style type="text/css" media="screen">
+        #editor {
+            min-height: 600px;
+            height: 100%;
+        }
+
+        #searchSnippetLayer, #resultButtonLayer {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+
+
+<div class="col-xs-12">
+    <h1> .gitignore generator</h1>
+</div>
+
+<div class="col-xs-3" id="searchLayer">
+
+    <div class="input-group" id="searchSnippetLayer">
+        <input type="text" class="form-control" id="searchSnippet" placeholder="search for...">
+      <span class="input-group-btn">
+        <button class="btn btn-default" type="button">Go!</button>
+      </span>
+    </div>
+
+    <div class="list-group" id="snippetList" data-toggle="items">
+        <a href="#" class="list-group-item" data-filepath="snippet/java.gitignore">java</a>
+        <a href="#" class="list-group-item" data-filepath="snippet/jetbrain.gitignore">jetbrain</a>
+        <a href="#" class="list-group-item" data-filepath="snippet/maven.gitignore">maven</a>
+    </div>
+</div>
+
+<div class="col-xs-9" id="resultLayer">
+
+    <div class="btn-group btn-group-lg" id="resultButtonLayer" role="group" aria-label="...">
+        <div class="btn-group" role="group">
+            <button type="button" class="btn btn-default" id="deleteAll">Delete All</button>
+        </div>
+        <div class="btn-group" role="group">
+            <button type="button" class="btn btn-default" id="copy">Copy</button>
+        </div>
+    </div>
+
+    <div id="editor"></div>
+</div>
+
+
+<!-- Latest compiled and minified JavaScript -->
+<script src="//cdn.jsdelivr.net/jquery/2.1.3/jquery.min.js"></script>
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/ace/1.1.8/ace.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/ace/1.1.8/mode-properties.js"></script>
+<script src="components/zeroclipboard/dist/ZeroClipboard.min.js"></script>
+<script>
+    var editor = ace.edit("editor");
+    editor.setTheme("ace/theme/chrome");
+    editor.getSession().setMode("ace/mode/properties");
+
+
+    //선택할 경우 선택된 모든 리스트를 가지고 온 뒤, 파일을 읽어온다.
+    $(".list-group > a").on("click", function () {
+        var $this = $(this);
+
+        if ($this.hasClass("active")) {
+            $this.removeClass("active");
+        } else {
+            $this.addClass("active");
+        }
+
+        generateGitignore();
+    });
+
+    var generateGitignore = function () {
+        var snippetList = $(".list-group > a.active");
+
+        var result = [];
+        for (var i = 0; i < snippetList.length; i++) {
+            var $snippet = $(snippetList.get(i));
+            var text = $.ajax({
+                url: $snippet.attr("data-filepath"),
+                async: false
+            });
+
+            result.push(text.responseText);
+        }
+
+        editor.setValue(result.join("\n\n"));
+        editor.moveCursorTo(0, 0);
+    };
+
+    $("#searchSnippet").on("keyup", function () {
+        var searchText = $(this).val();
+
+        if (searchText != "") {
+            $(".list-group > a").each(function (idx, snippet) {
+                var $snippet = $(snippet);
+                var text = $snippet.text();
+
+                if (text.indexOf(searchText) != -1) {
+                    $snippet.removeClass("hide");
+                } else {
+                    $snippet.addClass("hide");
+                }
+            });
+        } else {
+            $(".list-group > a").removeClass("hide");
+        }
+    });
+
+    $("#deleteAll").on("click", function () {
+        $("#searchSnippet").text("");
+        $(".list-group > a").removeClass("active");
+        $(".list-group > a").removeClass("hide");
+    });
+
+
+    $("#copy").on("click", function(){
+        alert("on working!!");
+//        var client = new ZeroClipboard();
+//        var code = editor.getSession().getValue();
+//        ZeroClipboard.setValue("text/plain", code);
+    });
+
+
+</script>
+</body>
+</html>
