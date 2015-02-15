@@ -80,6 +80,6 @@ client.on("ready", function (readyEvent) {
     });
     client.on("aftercopy", function (event) {
         console.log(editor.getValue());
-        alert("Text copied to clipboard");
+        alert("Text copied to clipboard\nHappy programming! :)");
     });
 });
