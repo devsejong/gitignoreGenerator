@@ -1,0 +1,3 @@
+# gitignoreGenerator
+
+simple .gitignore generator
