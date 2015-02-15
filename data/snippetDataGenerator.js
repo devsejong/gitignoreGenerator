@@ -11,10 +11,10 @@ var readFileListReculsive = function (basePath) {
         var element = fileList[idx];
         var fileWithPath = basePath + "/" + element;
 
-        if(fs.lstatSync(fileWithPath).isDirectory()){
+        if (fs.lstatSync(fileWithPath).isDirectory()) {
             var childFileList = readFileListReculsive(fileWithPath);
             resultFileList = resultFileList.concat(childFileList);
-        }else{
+        } else {
             resultFileList.push(fileWithPath);
         }
     }
@@ -29,16 +29,23 @@ function endsWith(str, suffix) {
 
 var fileList = readFileListReculsive("./gitignore-snippet");
 var snippetList = [];
-for(var idx = 0; idx < fileList.length; idx++){
+for (var idx = 0; idx < fileList.length; idx++) {
     var file = fileList[idx];
-    if(endsWith(file, ".gitignore")){
+    if (endsWith(file, ".gitignore")) {
         snippetList.push({
-            name : file.split("/").pop().replace(".gitignore", ""),
-            path : file
+            name: file.split("/").pop().replace(".gitignore", ""),
+            path: "data/" + file.replace("./", "")
         });
     }
 }
 
-console.log(snippetList);
+snippetList = snippetList.sort(function (a, b) {
+    if (a.name > b.name) {
+        return 1
+    }
+    else {
+        return -1;
+    }
+});
 
 fs.writeFile("./snippetData.json", JSON.stringify(snippetList));

@@ -6,12 +6,19 @@ editor.setTheme("ace/theme/chrome");
 editor.getSession().setMode("ace/mode/properties");
 
 //read gitIgnore snippet data and set list;
-(function(){
-
+(function () {
+    $.get("data/snippetData.json").success(function (snippetList) {
+        for (var idx = 0; idx < snippetList.length; idx++) {
+            var snippet = snippetList[idx];
+            var element = "<a  href=\"#\" class=\"list-group-item\"" +
+                " data-filepath=\"" + snippet.path + "\">" + snippet.name + "</a>";
+            $(".list-group").append(element);
+        }
+    });
 })();
 
 
-$(".list-group > a").on("click", function () {
+$(".list-group").on("click", "a", function () {
     var $this = $(this);
 
     if ($this.hasClass("active"))
@@ -45,15 +52,15 @@ $("#searchSnippet").on("keyup", function () {
     var searchText = $(this).val();
 
     if (searchText != "") {
+        var reg = new RegExp(searchText, "i");
         $(".list-group > a").each(function (idx, snippet) {
             var $snippet = $(snippet);
             var text = $snippet.text();
 
-            if (text.indexOf(searchText) != -1) {
+            if (text.search(reg) !== -1)
                 $snippet.removeClass("hide");
-            } else {
+            else
                 $snippet.addClass("hide");
-            }
         });
     } else {
         $(".list-group > a").removeClass("hide");
